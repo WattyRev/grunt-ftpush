@@ -10,9 +10,9 @@
 
 **NOTE**: with the limited abilities of FTP, the only adequate way to track changes is to track them locally. It means that each run will compare set of files **to the previous run** and not the server state. Therefore:
 
-  * The first run will upload everything since we have no idea what's the state of a server. Current state will be saved to `.grunt/ftpush`.
-  * If there are two users that deploy (or you use multiple machines), it will increment _all_ local changes. It can be considered safe but you might end up uploading a bit more.
-  * To make it reupload from the scratch, delete files located at `.grunt/ftpush/*`.
+-   The first run will upload everything since we have no idea what's the state of a server. Current state will be saved to `.grunt/ftpush`.
+-   If there are two users that deploy (or you use multiple machines), it will increment _all_ local changes. It can be considered safe but you might end up uploading a bit more.
+-   To make it reupload from the scratch, delete files located at `.grunt/ftpush/*`.
 
 ## ATTENTION
 
@@ -25,6 +25,7 @@ In this mode ftpush won't delete any excessive files on the server. It won't eve
 If it works for you – add `simple: true` to your config and that's it!
 
 ## Getting Started
+
 This plugin requires Grunt `~0.4.0`
 
 If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins. Once you're familiar with that process, you may install this plugin with this command:
@@ -36,7 +37,7 @@ npm install grunt-ftpush --save-dev
 Once the plugin has been installed, it may be enabled inside your Gruntfile with this line of JavaScript:
 
 ```js
-grunt.loadNpmTasks('grunt-ftpush');
+grunt.loadNpmTasks("grunt-ftpush");
 ```
 
 ## How to use
@@ -49,7 +50,9 @@ ftpush: {
     auth: {
       host: 'server.com',
       port: 21,
-      authKey: 'key1'
+      authKey: 'key1',
+      username: grunt.option("my-username"),
+      password: grunt.option("my-password")
     },
     src: 'path/to/source/folder',
     dest: '/path/to/destination/folder',
@@ -64,16 +67,18 @@ ftpush: {
 
 The possible parameters of the configuration are:
 
-- **host** - the name or the IP address of the server we are deploying to
-- **port** - the port that the _ftp_ service is running on
-- **authKey** - a key for looking up the saved credentials. If no value is defined, the `host` parameter will be used
-- **src** - the source location, the local folder that we are transferring to the server
-- **dest** - the destination location, the folder on the server we are deploying to
-- **exclusions** - an optional parameter allowing us to exclude files and folders by utilizing grunt's support for `minimatch`. Please note that the definitions should be relative to the project root
-- **keep** - an array of paths that should be kept on the server even when they are not presented locally. The definitions should be relative to `dest`.
-- **simple** - if set to `true`, task will upload modified files and quit, it will NOT remove redundant files and directories at the server side.
-- **useList** - if set to `true`, FTP client will be enforced to use LIST command instead of STAT (that is not supported by some of servers)
-- **cachePath** - optional local path of file that will store all hashes of already uploaded files. If no path is specified, will use default path '.grunt/ftpush/{taskName}.json
+-   **host** - the name or the IP address of the server we are deploying to
+-   **port** - the port that the _ftp_ service is running on
+-   **authKey** - a key for looking up the saved credentials. If no value is defined, the `host` parameter will be used. If username and password are provided, authKey will not be used.
+-   **username** - the username for connecting to the FTP server. Will only be used if a password is also provided. Use `grunt.option` instead of storing credentials in a versioned file.
+-   **password** - the password for connecting to the FTP server. Will only be used if a username is also provided. Use `grunt.option` instead of storing credentials in a versioned file.
+-   **src** - the source location, the local folder that we are transferring to the server
+-   **dest** - the destination location, the folder on the server we are deploying to
+-   **exclusions** - an optional parameter allowing us to exclude files and folders by utilizing grunt's support for `minimatch`. Please note that the definitions should be relative to the project root
+-   **keep** - an array of paths that should be kept on the server even when they are not presented locally. The definitions should be relative to `dest`.
+-   **simple** - if set to `true`, task will upload modified files and quit, it will NOT remove redundant files and directories at the server side.
+-   **useList** - if set to `true`, FTP client will be enforced to use LIST command instead of STAT (that is not supported by some of servers)
+-   **cachePath** - optional local path of file that will store all hashes of already uploaded files. If no path is specified, will use default path '.grunt/ftpush/{taskName}.json
 
 ## Options
 
@@ -108,7 +113,7 @@ It also is built by taking advantage of the great work of Sergi Mansilla and his
 
 ## Maintainers
 
-* Boris Staal, [@inossidabile](http://staal.io)
+-   Boris Staal, [@inossidabile](http://staal.io)
 
 ## License
 

@@ -11,20 +11,24 @@ module.exports = (grunt) ->
 
   grunt.registerMultiTask "ftpush", "Mirror code over FTP", (target) ->
     done = @async()
-    
+
     auth = (key) ->
       if grunt.file.exists(".ftppass")
         config = grunt.file.read(".ftppass")
         return JSON.parse(config)[key] if key? and config.length
 
+    explicitAuth = (username, password) ->
+      if (username && password)
+        return { username, password }
+
     grunt.log.debug "Collecting information..."
 
     localRoot   = if Array.isArray(@data.src) then @data.src[0] else @data.src
     remoteRoot  = if Array.isArray(@data.dest) then @data.dest[0] else @data.dest
-    credentials = if @data.auth.authKey then auth(@data.auth.authKey) else auth(@data.auth.host)
+    credentials = explicitAuth(@data.auth.username, @data.auth.password) || auth(@data.auth.authKey || @data.auth.host)
     exclusions  = @data.exclusions || []
     keep        = @data.keep || []
-    cachePath = @data.cachePath || Path.join(".grunt", "ftpush", "#{@target}.json")   
+    cachePath = @data.cachePath || Path.join(".grunt", "ftpush", "#{@target}.json")
     options     =
       useList: !!@data.useList
       remove:  !(grunt.option('simple') || @data.simple)
@@ -141,10 +145,10 @@ module.exports = (grunt) ->
 
     buildTree: (root=@localRoot, result={}) ->
       result[Path.sep] ||= []
-      
+
       unless grunt.file.exists(root)
-        grunt.fatal "#{root} is not an existing location"  
-      
+        grunt.fatal "#{root} is not an existing location"
+
       for filename in FS.readdirSync(root)
         path = Path.join(root, filename)
 
@@ -230,7 +234,7 @@ module.exports = (grunt) ->
             grunt.log.ok "New remote folder created " + path.yellow
 
           callback([])
-    
+
     upload: (basename, path, hash, callback) ->
       grunt.log.debug "Upload", util.inspect(basename), util.inspect(path), util.inspect(hash)
 
